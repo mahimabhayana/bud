@@ -1,38 +1,16 @@
-/**
- * Creates a menu entry in the Google Docs UI when the document is opened.
- * This method is only used by the regular add-on, and is never called by
- * the mobile add-on version.
- *
- * @param {object} e The event parameter for a simple onOpen trigger. To
- *     determine which authorization mode (ScriptApp.AuthMode) the trigger is
- *     running in, inspect e.authMode.
- */
+var ankiString = "";
+var cardFile;
+
 function onOpen(e) {
   DocumentApp.getUi().createAddonMenu()
       .addItem('Start', 'showSidebar')
       .addToUi();
 }
 
-/**
- * Runs when the add-on is installed.
- * This method is only used by the regular add-on, and is never called by
- * the mobile add-on version.
- *
- * @param {object} e The event parameter for a simple onInstall trigger. To
- *     determine which authorization mode (ScriptApp.AuthMode) the trigger is
- *     running in, inspect e.authMode. (In practice, onInstall triggers always
- *     run in AuthMode.FULL, but onOpen triggers may be AuthMode.LIMITED or
- *     AuthMode.NONE.)
- */
 function onInstall(e) {
   onOpen(e);
 }
 
-/**
- * Opens a sidebar in the document containing the add-on's user interface.
- * This method is only used by the regular add-on, and is never called by
- * the mobile add-on version.
- */
 function showSidebar() {
   var ui = HtmlService.createHtmlOutputFromFile('sidebar')
       .setTitle('Flash cards');
@@ -70,16 +48,11 @@ function boldTerm(paraString, paraText) {
   if (bold) {
     term = paraString.slice(startBold, i-1);
   }  
-  //text.setBold(false);
+
   return term;
 }
 
-/**
- * Gets the text the user has selected. If there is no selection,
- * this function displays an error message.
- *
- * @return {Array.<string>} The selected text.
- */
+
 function getCards() {
   var doc = DocumentApp.getActiveDocument().getBody();
   var paras = doc.getParagraphs();
@@ -105,31 +78,26 @@ function getCards() {
   return cards;
 }
 
-/**
- * Gets the user-selected text and translates it from the origin language to the
- * destination language. The languages are notated by their two-letter short
- * form. For example, English is 'en', and Spanish is 'es'. The origin language
- * may be specified as an empty string to indicate that Google Translate should
- * auto-detect the language.
- *
- * @param {string} origin The two-letter short form for the origin language.
- * @param {string} dest The two-letter short form for the destination language.
- * @param {boolean} savePrefs Whether to save the origin and destination
- *     language preferences.
- * @return {Object} Object containing the original text and the result of the
- *     translation.
- */
-function getExtractedCards(origin, dest, savePrefs) {
+function getExtractedCards() {
   var doc = DocumentApp.getActiveDocument();
   var docName = doc.getName() + '.txt';
   var cards = getCards();
   
-  var ankiString = objToString(cards);
-  var file = DriveApp.getFileById(doc.getId());
+  ankiString = objToString(cards);
+
+  var currentFile = DriveApp.getFileById(doc.getId());
   var folder = file.getParents().next();
-  
   folder.createFile(docName, ankiString);
+  cardFile = folder.getFilesByName(docName).next();
+
+  if (!cardFile) {
+    folder.createFile(docName, ankiString);
+  } else {
+    cardFile.setContent(ankiString);
+  }
   return {
     text: ankiString
   };
 }
+
+

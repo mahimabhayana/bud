@@ -40,7 +40,6 @@
         </div>
         <div class="block" id="button-bar">
           <button class="blue" id="pull-text">Extract</button>
-          <button class="white" id="select-text">Add</button>
         </div>
     </div>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -56,9 +55,6 @@
       function pullText() {
         this.disabled = true;
         $('#error').remove();
-        /*var origin = $('input[name=origin]:checked').val();
-        var dest = $('input[name=dest]:checked').val();
-        var savePrefs = $('#save-prefs').is(':checked');*/
         google.script.run
             .withSuccessHandler(
               function(extractedCards, element) {
@@ -80,7 +76,7 @@
         google.script.run
             .withSuccessHandler(
               function(extractedCards, element) {
-                $('#select-text').val(extractedCards,text);
+                $('#extracted-text').val(extractedCards.text);
                 element.disabled = false;
               })
             .withFailureHandler(
