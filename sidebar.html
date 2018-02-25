@@ -61,8 +61,8 @@
         var savePrefs = $('#save-prefs').is(':checked');*/
         google.script.run
             .withSuccessHandler(
-              function(extractedText, element) {
-                $('#extracted-text').val(extractedText.text);
+              function(extractedCards, element) {
+                $('#extracted-text').val(extractedCards.text);
                 element.disabled = false;
               })
             .withFailureHandler(
@@ -71,7 +71,7 @@
                 element.disabled = false;
               })
             .withUserObject(this)
-            .getExtractedText();
+            .getExtractedCards();
       }
      
       function selectText() {
@@ -79,8 +79,8 @@
         $('#error').remove();
         google.script.run
             .withSuccessHandler(
-              function(extractedText, element) {
-                $('#select-text').val(extractedText,text);
+              function(extractedCards, element) {
+                $('#select-text').val(extractedCards,text);
                 element.disabled = false;
               })
             .withFailureHandler(
